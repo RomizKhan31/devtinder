@@ -1,28 +1,25 @@
-// multiple route handlers
 
 const express = require("express");
+
+const { adminAuth, userAuth } = require("./middlewares/auth");
 const app = express();
 
-app.use("/user", (req, res, next) => {
-    console.log("Handling the route user1");
-   //res.send("response1!!");
-    next();
-},
-    (req, res, next) => {
-        console.log("handing the route user2");
-        next();
-       //res.send("response2");
-    },
-    (req, res, next) => {
-        console.log("handing the route user3")
-        next();
-    },
-    (req, res, next) => {
-        console.log("handing the route user4")
-       res.send("4th response!!!");
-    }
-),
+
+// app.use("/admin", adminAuth);
+// app.use("/user", userAuth);
+
+app.get("/admin/getAllData", adminAuth, (req, res) => {
+    res.send("Admin's all data is sent successfully");
+});
+
+app.post("/user/login", (req, res) => {
+    res.status(201).send("login successful!!!");
+});
+
+app.get("/user/data", userAuth, (req, res) => {
+    res.send("user's all data is sent successfully");
+});
 
 
-    app.listen(3333, () =>
-        console.log("The server is running on port 3333..."));
+app.listen(3333, () =>
+    console.log("The server is listening on port 3333..."));
