@@ -5,20 +5,32 @@ const { adminAuth, userAuth } = require("./middlewares/auth");
 const app = express();
 
 
-// app.use("/admin", adminAuth);
-// app.use("/user", userAuth);
 
-app.get("/admin/getAllData", adminAuth, (req, res) => {
-    res.send("Admin's all data is sent successfully");
+// Error handlers, professional way : try-catch. if you generate a custom error use : throw new errors
+
+
+app.use("/", (err, req, res, next) => {
+    if (err) {
+        res.status(500).send("something went wrong!! please fix the error currectly.");
+    }
 });
 
-app.post("/user/login", (req, res) => {
-    res.status(201).send("login successful!!!");
-});
+app.get("/userData", (req, res, next) => {
 
-app.get("/user/data", userAuth, (req, res) => {
-    res.send("user's all data is sent successfully");
-});
+    try {
+        throw new Error("created custom error!!!");
+        res.send("user data sent");
+    } catch (err){
+        res.send("something went wrong, please contact the admin team!!");
+    }
+    
+
+})
+
+
+
+
+
 
 
 app.listen(3333, () =>
