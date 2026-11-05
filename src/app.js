@@ -1,37 +1,33 @@
-
 const express = require("express");
-
-const { adminAuth, userAuth } = require("./middlewares/auth");
+const connectDB = require("./config/database");
 const app = express();
+const User = require("./models/user");
 
+//create a api endpoint to create a user
+app.post("/signup", async (req, res) => {
+  // creating a new instance or document of the User model
+  const user = new User({
+    name:"Shafi",
+    email: "shafi@walton.com",
+    age: 24,
+    password: "123456",
+  });
 
-
-// Error handlers, professional way : try-catch. if you generate a custom error use : throw new errors
-
-
-app.use("/", (err, req, res, next) => {
-    if (err) {
-        res.status(500).send("something went wrong!! please fix the error currectly.");
-    }
+  try {
+    await user.save();
+    res.send("user created successfully");
+  } catch (error) {
+    res.status(401).send("Error creating user: " + error.message);
+  }
 });
 
-app.get("/userData", (req, res, next) => {
-
-    try {
-        throw new Error("created custom error!!!");
-        res.send("user data sent");
-    } catch (err){
-        res.send("something went wrong, please contact the admin team!!");
-    }
-    
-
-})
-
-
-
-
-
-
-
-app.listen(3333, () =>
-    console.log("The server is listening on port 3333..."));
+connectDB()
+  .then(() => {
+    console.log("Database connected successfully");
+    app.listen(3333, () =>
+      console.log("The server is listening on port 3333..."),
+    );
+  })
+  .catch((err) => {
+    console.error("Error connecting to the database:", err);
+  });
