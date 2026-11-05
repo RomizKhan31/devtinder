@@ -1,33 +1,37 @@
 const express = require("express");
 const connectDB = require("./config/database");
-const app = express();
 const User = require("./models/user");
 
-//create a api endpoint to create a user
-app.post("/signup", async (req, res) => {
-  // creating a new instance or document of the User model
-  const user = new User({
-    name:"Shafi",
-    email: "shafi@walton.com",
-    age: 24,
-    password: "123456",
-  });
+const app = express();
+const PORT = 3333;
 
+app.use(express.json());
+
+app.post("/signup", async (req, res) => {
   try {
-    await user.save();
-    res.send("user created successfully");
+    const user = new User(req.body);
+    const savedUser = await user.save();
+
+    res.status(201).json({
+      message: "user created successfully",
+      user: savedUser,
+    });
   } catch (error) {
-    res.status(401).send("Error creating user: " + error.message);
+    res.status(400).json({
+      message: "Error creating user",
+      error: error.message,
+    });
   }
 });
 
 connectDB()
   .then(() => {
     console.log("Database connected successfully");
-    app.listen(3333, () =>
-      console.log("The server is listening on port 3333..."),
-    );
+    app.listen(PORT, () => {
+      console.log(`The server is listening on port ${PORT}...`);
+    });
   })
   .catch((err) => {
     console.error("Error connecting to the database:", err);
+    process.exit(1);
   });
